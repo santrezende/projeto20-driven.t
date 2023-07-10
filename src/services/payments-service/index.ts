@@ -5,7 +5,7 @@ import ticketsRepository from '@/repositories/tickets-repository';
 import { CardData } from '@/schemas';
 
 async function postPayment(ticketId: number, cardData: CardData, userId: number) {
-  const validateTicket = await ticketsRepository.getTicket(ticketId);
+  const validateTicket = await ticketsRepository.getTicketById(ticketId);
 
   if (!validateTicket) {
     throw notFoundError();
