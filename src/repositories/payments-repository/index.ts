@@ -15,8 +15,17 @@ async function postTicket(data: CardDataRepo) {
   });
 }
 
+async function getPayments(ticketId: string) {
+  return prisma.payment.findFirst({
+    where: {
+      ticketId: Number(ticketId),
+    },
+  });
+}
+
 const paymentsRepository = {
   postTicket,
+  getPayments,
 };
 
 export default paymentsRepository;

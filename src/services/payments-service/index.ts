@@ -1,4 +1,4 @@
-import { notFoundError, conflictError } from '@/errors';
+import { notFoundError, conflictError, unauthorizedError } from '@/errors';
 import enrollmentRepository from '@/repositories/enrollment-repository';
 import paymentsRepository from '@/repositories/payments-repository';
 import ticketsRepository from '@/repositories/tickets-repository';
@@ -35,8 +35,27 @@ async function postPayment(ticketId: number, cardData: CardData, userId: number)
   return newPayment;
 }
 
+async function getPayment(ticketId: string, userId: number) {
+  if (!ticketId) {
+    throw conflictError('send the ticketId with queryparams');
+  }
+
+  const validateTicket = await ticketsRepository.getTicketWithUserId(ticketId);
+
+  if (!validateTicket) {
+    throw notFoundError();
+  }
+
+  if (validateTicket.Enrollment.userId !== userId) {
+    throw unauthorizedError();
+  }
+
+  return await paymentsRepository.getPayments(ticketId);
+}
+
 const paymentsService = {
   postPayment,
+  getPayment,
 };
 
 export default paymentsService;

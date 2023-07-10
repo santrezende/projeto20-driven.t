@@ -23,7 +23,12 @@ export async function getPayment(req: AuthenticatedRequest, res: Response) {
   const { ticketId } = req.query as Record<string, string>;
   const userId = req.userId;
   try {
+    const payment = await paymentsService.getPayment(ticketId, userId);
+    res.send(payment).status(httpStatus.OK);
   } catch (error) {
+    if (error.name === 'ConflictError') {
+      return res.status(httpStatus.BAD_REQUEST).send(error.message);
+    }
     return res.status(httpStatus.BAD_REQUEST).send(error);
   }
 }
