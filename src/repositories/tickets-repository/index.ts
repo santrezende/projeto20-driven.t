@@ -26,9 +26,36 @@ async function postTicket(ticketTypeId: number, enrollmentId: number) {
 }
 
 async function getTicket(enrollmentId: number) {
-  return prisma.ticket.findFirst({
+  return prisma.ticket.findMany({
     where: {
       enrollmentId,
+    },
+  });
+}
+
+async function getTicketWithPrice(enrollmentId: number) {
+  return prisma.ticket.findMany({
+    where: {
+      enrollmentId,
+    },
+    include: {
+      TicketType: {
+        select: {
+          price: true,
+        },
+      },
+    },
+  });
+}
+
+async function updatePaidTicket(id: number) {
+  return prisma.ticket.update({
+    where: {
+      id,
+    },
+    data: {
+      status: 'PAID',
+      updatedAt: dayjs().toDate(),
     },
   });
 }
@@ -38,6 +65,8 @@ const ticketsRepository = {
   getTicketType,
   postTicket,
   getTicket,
+  getTicketWithPrice,
+  updatePaidTicket,
 };
 
 export default ticketsRepository;

@@ -33,8 +33,14 @@ export async function createNewTicket(req: AuthenticatedRequest, res: Response) 
 }
 
 export async function getUserTickets(req: AuthenticatedRequest, res: Response) {
+  const userId = req.userId;
   try {
+    const ticket = await ticketsService.getUserTickets(userId);
+    res.status(httpStatus.OK).send(ticket);
   } catch (error) {
+    if (error.name === 'NotFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
     res.status(httpStatus.INTERNAL_SERVER_ERROR).send(error.message);
   }
 }
